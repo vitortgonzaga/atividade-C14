@@ -1,0 +1,100 @@
+name: CI-CD Password Validator
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 20
+  PROD_API_URL: ${{ vars.PROD_API_URL }}
+  RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+  VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+  NOTIFY_EMAIL_TO: ${{ vars.NOTIFY_EMAIL_TO }}
+
+jobs:
+  backend-tests:
+    name: Testes Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Run tests with coverage
+        working-directory: backend
+        run: npm run test:ci
+
+      - name: Upload backend coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage
+
+      - name: Upload backend test report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: backend/coverage/test-report.json
+
+  build:
+    name: Build Frontend e Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_URL: ${{ env.PROD_API_URL }}
+        run: npm run build
+
+      - name: Package artifacts
+        run: |
+          tar -czf frontend-dist.tar.gz -C frontend dist
+          tar -czf backend-source.tar.gz -C backend src package.json
+
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend-dist.tar.gz
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-source
+          path: backend-source.tar.gz
