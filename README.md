@@ -1,6 +1,6 @@
 # Fullstack Password Validator
 
-[![CI-CD Password Validator](https://github.com/vitortgonzaga/C14---Password-validator/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/vitortgonzaga/C14---Password-validator/actions/workflows/ci-cd.yml)
+[![CI-CD Password Validator](https://github.com/vitortgonzaga/atividade-C14/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/vitortgonzaga/atividade-C14/actions/workflows/ci-cd.yml)
 
 Projeto fullstack para validação de senhas, com foco em boas práticas de engenharia de software: arquitetura em camadas, testes automatizados e pipeline CI/CD com build, artefatos e deploy.
 
@@ -14,7 +14,7 @@ Disponibilizar uma API para validar senhas e classificar sua força, integrada a
 
 - Node.js
 - Express
-- Jest + Supertest
+- Jest (testes unitários)
 
 ### Frontend
 
@@ -181,6 +181,7 @@ O workflow `.github/workflows/ci-cd.yml` executa:
 3. **Deploy automático** (Render e Vercel) via deploy hooks, após sucesso das etapas anteriores.
 4. **Criação de release** com versionamento automático (`v1.0.<run_number>`).
 5. **Notificação de status** consolidando resultado de testes, build e deploy.
+6. **Envio de e-mail** via script Python no próprio workflow (SMTP configurado por Secrets/Variables).
 
 ## Estrutura do repositório
 

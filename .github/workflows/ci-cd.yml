@@ -16,6 +16,11 @@ env:
   RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
   VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
   NOTIFY_EMAIL_TO: ${{ vars.NOTIFY_EMAIL_TO }}
+  SMTP_HOST: ${{ secrets.SMTP_HOST }}
+  SMTP_PORT: ${{ vars.SMTP_PORT }}
+  SMTP_USER: ${{ secrets.SMTP_USER }}
+  SMTP_PASS: ${{ secrets.SMTP_PASS }}
+  SMTP_FROM: ${{ vars.SMTP_FROM }}
 
 jobs:
   backend-tests:
@@ -162,3 +167,61 @@ jobs:
           echo "API Prod: ${{ env.PROD_API_URL }}"
           echo "Destino:  ${{ env.NOTIFY_EMAIL_TO }}"
           echo "=============================="
+
+      - name: Send e-mail notification
+        if: ${{ env.SMTP_HOST != '' && env.SMTP_USER != '' && env.SMTP_PASS != '' && env.SMTP_FROM != '' && env.NOTIFY_EMAIL_TO != '' }}
+        env:
+          JOB_STATUS: ${{ steps.message.outputs.status }}
+          TEST_RESULT: ${{ needs.backend-tests.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import smtplib
+          from email.mime.text import MIMEText
+          from email.mime.multipart import MIMEMultipart
+
+          status = os.environ.get("JOB_STATUS", "UNKNOWN")
+          test_result = os.environ.get("TEST_RESULT", "unknown")
+          build_result = os.environ.get("BUILD_RESULT", "unknown")
+          deploy_result = os.environ.get("DEPLOY_RESULT", "unknown")
+          run_url = os.environ.get("RUN_URL", "")
+
+          sender = os.environ["SMTP_FROM"]
+          recipient = os.environ["NOTIFY_EMAIL_TO"]
+
+          msg = MIMEMultipart()
+          msg["From"] = sender
+          msg["To"] = recipient
+          msg["Subject"] = f"[CI/CD] Password Validator - {status}"
+
+          body = (
+              "CI/CD Notification\n\n"
+              f"Status geral: {status}\n"
+              f"Testes: {test_result}\n"
+              f"Build: {build_result}\n"
+              f"Deploy: {deploy_result}\n"
+              f"API Prod: {os.environ.get('PROD_API_URL', '')}\n"
+              f"Run: {run_url}\n"
+          )
+          msg.attach(MIMEText(body, "plain", "utf-8"))
+
+          host = os.environ["SMTP_HOST"]
+          port = int(os.environ.get("SMTP_PORT") or "587")
+          user = os.environ["SMTP_USER"]
+          password = os.environ["SMTP_PASS"]
+
+          with smtplib.SMTP(host, port, timeout=30) as server:
+              server.starttls()
+              server.login(user, password)
+              server.sendmail(sender, [recipient], msg.as_string())
+
+          print("E-mail de notificação enviado com sucesso.")
+          PY
+
+      - name: Skip e-mail notification when SMTP is not configured
+        if: ${{ !(env.SMTP_HOST != '' && env.SMTP_USER != '' && env.SMTP_PASS != '' && env.SMTP_FROM != '' && env.NOTIFY_EMAIL_TO != '') }}
+        run: |
+          echo "SMTP não configurado. O envio de e-mail foi ignorado."
