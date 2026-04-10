@@ -1,6 +1,6 @@
 # Fullstack Password Validator
 
-[![CI-CD Password Validator](https://github.com/vitortgonzaga/C14---Password-validator/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/vitortgonzaga/C14---Password-validator/actions/workflows/ci-cd.yml)
+[![CI-CD Password Validator](https://github.com/vitortgonzaga/atividade-C14/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/vitortgonzaga/atividade-C14/actions/workflows/ci-cd.yml)
 
 Projeto fullstack para validação de senhas, com foco em boas práticas de engenharia de software: arquitetura em camadas, testes automatizados e pipeline CI/CD com build, artefatos e deploy.
 
