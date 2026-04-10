@@ -70,12 +70,17 @@ function App() {
 
   return (
     <main className="page">
-      <section className="card">
-        <header className="title-group">
-          <p className="eyebrow">Security Check</p>
-          <h1>Validador de Senha</h1>
-          <p className="subtitle">Receba uma análise imediata de força e conformidade.</p>
-        </header>
+      <header className="site-header">
+        <span className="site-title">Password Validator</span>
+      </header>
+
+      <div className="content-stack">
+        <section className="card">
+          <header className="title-group">
+            <p className="eyebrow">Security Check</p>
+            <h1>Validador de Senha</h1>
+            <p className="subtitle">Receba uma análise imediata de força e conformidade.</p>
+          </header>
 
         <form className="form" onSubmit={handleValidate}>
           <label htmlFor="password">Senha</label>
@@ -108,37 +113,47 @@ function App() {
 
         {requestError && <p className="error">{requestError}</p>}
 
-        {result && (
-          <section className="result" aria-live="polite">
-            <div className="result-header">
-              <span className={`badge ${result.valid ? 'badge-ok' : 'badge-fail'}`}>
-                {result.valid ? 'Senha válida' : 'Senha inválida'}
-              </span>
-              <span className={`strength ${strengthClass}`}>Força: {strengthLabel}</span>
-            </div>
+          {result && (
+            <section className="result" aria-live="polite">
+              <div className="result-header">
+                <span className={`badge ${result.valid ? 'badge-ok' : 'badge-fail'}`}>
+                  {result.valid ? 'Senha válida' : 'Senha inválida'}
+                </span>
+                <span className={`strength ${strengthClass}`}>Força: {strengthLabel}</span>
+              </div>
 
-            <div className="result-block">
-              <h2>Erros</h2>
-              <ul>
-                {result.errors.length === 0 ? <li>Nenhum</li> : null}
-                {result.errors.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
+              <div className="result-block">
+                <h2>Erros</h2>
+                <ul>
+                  {result.errors.length === 0 ? <li>Nenhum</li> : null}
+                  {result.errors.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
 
-            <div className="result-block">
-              <h2>Sugestões</h2>
-              <ul>
-                {result.suggestions.length === 0 ? <li>Nenhuma</li> : null}
-                {result.suggestions.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        )}
-      </section>
+              <div className="result-block">
+                <h2>Sugestões</h2>
+                <ul>
+                  {result.suggestions.length === 0 ? <li>Nenhuma</li> : null}
+                  {result.suggestions.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
+        </section>
+
+        <aside className="warning-box" role="note" aria-label="Boas práticas de senha">
+          <p className="warning-title">Boas práticas</p>
+          <ul>
+            <li>Evite dados pessoais ou datas de aniversário.</li>
+            <li>Não reutilize senhas em serviços diferentes.</li>
+            <li>Prefira um gerenciador de senhas confiável.</li>
+          </ul>
+        </aside>
+      </div>
     </main>
   );
 }
