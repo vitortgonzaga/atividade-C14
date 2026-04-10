@@ -203,4 +203,21 @@ O workflow `.github/workflows/ci-cd.yml` executa:
 
 ## Uso de IA no processo
 
-A IA foi utilizada para acelerar a estrutura inicial do projeto (base fullstack completa, organização em camadas com boas práticas e direção de CI/CD). O código final foi revisado e ajustado manualmente para aderência aos requisitos funcionais e de qualidade.
+A IA foi utilizada principalmente para criar a estrutura inicial do projeto, incluindo:
+
+- base do frontend (React + Vite)
+- base do backend (Node.js + Express)
+- organização inicial de pastas e separação por camadas
+
+O resultado inicial gerado pela IA foi satisfatório para acelerar o início do trabalho, mas ainda exigiu ajustes finos manuais, principalmente em:
+
+- regras de negócio
+- refinamento de interface
+- integração entre frontend e backend
+- adequação final aos requisitos da atividade
+
+Prompt utilizado como referência para essa etapa:
+
+```text
+Crie uma estrutura inicial de projeto fullstack para validação de senhas, com frontend em React + Vite e backend em Node.js + Express, organizada em camadas (routes, controllers, services), com configuração básica de execução e build. Não inclua testes neste momento. Gere uma base limpa e pronta para evolução e manutenção.
+```
